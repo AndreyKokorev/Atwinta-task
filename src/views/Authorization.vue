@@ -3,60 +3,72 @@
   .row
     .col-sm-6.mx-auto
       form(@submit.prevent="authUser", novalidate)
-        transition(name="slide-fade")
-          .step(v-show="step === 1")
-            .form-group
-              label(for="email-input") Email
-              input#email-input.form-control(
-                :class="status('email')",
-                @input="$v.formLog.email.$touch()",
-                v-model="formLog.email",
-                type="email",
-                aria-describedby="emailHelp"
-              )
-              .invalid-feedback(v-if="!$v.formLog.email.required") Поле обязательно для заполнения
-              .invalid-feedback(v-if="!$v.formLog.email.email") Поле должно быть email адресом
+        .auth
+          .form-group
+            label(for="email-input") Email
+            input#email-input.form-control(
+              :class="status('email')",
+              @blur="$v.formLog.email.$touch()",
+              v-model="formLog.email",
+              type="email",
+              aria-describedby="emailHelp"
+            )
+            .invalid-feedback(v-if="!$v.formLog.email.required") Поле обязательно для заполнения
+            .invalid-feedback(v-if="!$v.formLog.email.email") Поле должно быть email адресом
 
-            .form-group
-              label(for="password-input") Пароль
-              input#password-input.form-control(
-                :class="status('password')",
-                @input="$v.formLog.password.$touch()",
-                v-model="formLog.password",
-                type="password",
-                aria-describedby="passwordHelp"
-              )
-              .invalid-feedback(v-if="!$v.formLog.password.required") Поле обязательно для заполнения
+          .form-group(v-if="!restore")
+            label(for="password-input") Пароль
+            input#password-input.form-control(
+              :class="status('password')",
+              @blur="$v.formLog.password.$touch()",
+              v-model="formLog.password",
+              type="password",
+              aria-describedby="passwordHelp"
+            )
+            .invalid-feedback(v-if="!$v.formLog.password.required") Поле обязательно для заполнения
 
+          .btn-container
             button.btn.btn-primary(type="submit") Войти
+            button.btn.btn-secondary(@click="restorePassword", type="button") Забыли пароль?
 </template>
 
 <script>
 import { required, email } from "vuelidate/lib/validators";
 
 export default {
-  props: ["service"],
+  props: ['service', 'isLoggedIn', 'onLogin'],
   data() {
     return {
-      step: 1,
+      restore: false,
       formLog: {
         email: "andrey.kokorev.w.dev@gmail.com",
         password: "I7ExBEs4YZ",
       },
     };
   },
+  created() {
+    if (this.isLoggedIn === true) {
+      this.$router.push("workers");
+    }
+  },
   methods: {
     authUser: async function () {
       const response = await this.service.authorization(this.formLog);
-      const accessToken = response.token;
-
-      localStorage.setItem('accessToken', accessToken);
+      console.log(response)
+      localStorage.setItem("accessToken", response.token);
+      this.onLogin();
+      this.$router.push("workers");
+    },
+    restorePassword: async () => {
+      this.restore = true;
+      const response = await this.service.restorePassword(this.formLog.email);
+      console.log(response);
     },
     status(type) {
-      return {
-        "is-invalid warning": this.$v.formLog[type].$error
-      };
-    }
+      return [
+				this.$v.formLog[type].$error ? "is-invalid warning" : "is-valid"
+      ];
+    },
   },
   validations: {
     formLog: {
@@ -73,6 +85,18 @@ export default {
 </script>
 
 <style lang="scss" scope>
+.container {
+  justify-self: flex-end;
+}
+
+.btn-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-gap: 30px 40px;
+  width: 100%;
+  margin-top: 40px;
+}
+
 .warning {
   background: rgba(228, 25, 25, 0.11);
 }

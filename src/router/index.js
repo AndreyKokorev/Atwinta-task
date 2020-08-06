@@ -5,19 +5,19 @@ Vue.use(VueRouter)
 
   const routes = [
   {
-    path: '/',
-    name: 'Authorization',
-    component: () => import('../views/Authorization')
+    path: '/login',
+    component: () => import('../views/Authorization'),
+    props: true
   },
   {
     path: '/workers',
-    name: 'Workers',
-    component: () => import('../views/Workers.vue')
+    component: () => import('../views/Workers.vue'),
+    props: true
   },
   {
     path: '/profile',
-    name: 'Profile',
-    component: () => import('../views/Profile.vue')
+    component: () => import('../views/Profile.vue'),
+    props: true
   }
 ]
 
