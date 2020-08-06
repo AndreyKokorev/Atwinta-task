@@ -5,7 +5,7 @@ import Vuelidate from 'vuelidate'
 
 Vue.config.productionTip = false
 Vue.use(Vuelidate)
-console.log(router)
+
 new Vue({
   router,
   render: h => h(App)

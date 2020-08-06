@@ -18,8 +18,8 @@ export default {
 
 .container {
   position: absolute;
-  right: 40px;
-  top: 25px;
+  right: 5px;
+  top: 20px;
   width: auto;
   display: grid;
   grid-template-columns: minmax(auto, 200px);

@@ -4,7 +4,7 @@
     .nav__item-wrapper
       router-link.nav__item(to="/workers", v-if="isLoggedIn") Сотрудники
     .nav__item-wrapper
-      router-link.nav__item(to="/profile", v-if="isLoggedIn") Профиль
+      router-link.nav__item(to="/profile", v-if="isLoggedIn") {{ profileName }}
   router-view(
     :service="service",
     :isLoggedIn="isLoggedIn",
@@ -34,7 +34,7 @@ export default {
     Popup,
   },
   created() {
-    localStorage.removeItem('accessToken')
+    //localStorage.removeItem('accessToken')
     if (this.service.accessToken) {
       //const res = this.service.autoAuthorization();
       this.onLogin();
@@ -55,7 +55,7 @@ export default {
       setTimeout(() => {
         this.isVisible = false;
       }, 2000);
-    },
+		},
   },
 };
 </script>
@@ -108,4 +108,43 @@ export default {
 	}
 }
 
+.form-group {
+  position: relative;
+  margin-bottom: 28px;
+
+  &__label {
+    width: 100%;
+    font-size: 14px;
+    text-align: left;
+  }
+
+  &__label--required:before {
+    content: "*";
+    color: red;
+    margin-right: 4px;
+  }
+
+  &__feedback {
+    position: absolute;
+    bottom: -18px;
+    color: red;
+    font-size: 12px;
+  }
+}
+.input-group {
+
+  &__prepend {
+		border: 0px solid #ced4da;
+		border-width: 1px 0 1px 1px;
+		border-radius: 5px 0 0 5px;
+    padding: 7px;
+    background: #f5f7fa;
+  }
+
+  &__input {
+		height: 41px;
+    border: 1px solid #ced4da;
+		border-radius: 0 5px 5px 0;
+  }
+}
 </style>

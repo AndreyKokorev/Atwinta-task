@@ -2,81 +2,94 @@
 .container.mt-4
   .row
     .col-sm-6.mx-auto
-      h2.mb-5 Регистрация
+      h2.mb-5 Профиль
       form(@submit.prevent="saveProfile", novalidate)
         .form-group
-          label(for="name-input") Полное имя
-          input#name-input.form-control(
+          label.form-group__label.form-group__label--required(for="name-input") Имя
+          input#name-input.form-group__input.form-control(
             :class="status('name')",
-            @input="$v.profile.name.$touch()",
-            v-model="profile.name",
+            @blur="$v.profile.name.$touch()",
+            v-model.trim="profile.name",
             type="text",
             aria-describedby="emailHelp"
           )
-          .invalid-feedback(v-if="!$v.profile.name.required") Поле обязательно для заполнения
-          .invalid-feedback(v-if="!$v.profile.name.alpha") Используйте только символы алфавита
+          .form-group__feedback(v-if="!$v.profile.name.required") Обязательное поле
+          .form-group__feedback(v-if="!$v.profile.name.alpha") Используйте только символы алфавита
 
         .form-group
-          label(for="email-input") Email
-          input#email-input.form-control(
-            :class="status('email')",
-            @input="$v.profile.email.$touch()",
-            v-model="profile.email",
+          label.form-group__label(for="email-input") Email
+          input#email-input.form-control.form-group__input(
+						v-model="profile.email"
             type="email",
-            aria-describedby="emailHelp"
+            aria-describedby="emailHelp",
+            disabled
           )
-          .invalid-feedback(v-if="!$v.profile.email.required") Поле обязательно для заполнения
-          .invalid-feedback(v-if="!$v.profile.email.email") Поле должно быть email адресом
 
         .form-group
-          label(for="phone-input") Телефон
-          input#phone-input.form-control(v-model="profile.phone", type="tel")
+          label.form-group__label.form-group__label--required(
+            for="phone-input"
+          ) Телефон
+          .form-group__input-group.input-group
+            .input-group__prepend +7
+            input.input-group__input.form-control#phone-input(
+							:class="status('phone')",
+              @blur="$v.profile.phone.$touch()",
+              v-model.trim="profile.phone",
+              type="tel"
+            )
+          .form-group__feedback(v-if="!$v.profile.phone.required") Обязательное поле
+          .form-group__feedback(v-if="!$v.profile.phone.numeric") Некоректный номер
 
         .form-group
-          label(for="city-input") Населённый пункт
-          input#city-input.form-control(
+          label.form-group__label.form-group__label--required(for="city-input") Населённый пункт
+          input#city-input.form-group__input.form-control(
             :class="status('city')",
-            @input="$v.profile.city.$touch()",
-            v-model="profile.city",
+            @blur="$v.profile.city.$touch()",
+            v-model.trim="profile.city",
             type="text"
           )
-          .invalid-feedback(v-if="!$v.profile.city.alpha") Используйте только символы алфавита
+          .form-group__feedback(v-if="!$v.profile.city.required") Используйте только символы алфавита
 
         .form-group
-          label(for="birthday-input") Год рождения
-          input#birthday-input.form-control(
+          label.form-group__label.form-group__label--required(
+            for="birthday-input"
+          ) Год рождения
+          input#birthday-input.form-group__input.form-control(
+						:class="status('birthday')",
+						@blur="$v.profile.birthday.$touch()",
             v-model="profile.birthday",
             type="date"
           )
 
         .form-group
-          label(for="type-input") Тип задания
-          select#type-input.form-control(
-            :class="status('type')",
-            @input="$v.profile.type.$touch()",
-            v-model="profile.type"
+          label.form-group__label(for="type-input") Тип задания
+          select#type-input.form-group__select.form-control(
+            disabled
           )
             option(disabled) Выберите один из вариантов
             option(value="front") Frontend
             option(value="back") Backend
-          .invalid-feedback(v-if="!$v.profile.email.required") Поле обязательно для заполнения
 
         .form-group
-          label(for="github-input") Ссылка на проект
-          input#github-input.form-control(
-            v-model="profile.github",
-            type="text"
-          )
+          label.label-group__label(for="github-input") Ссылка на проект
+          .form-group__inputl-group.input-group 
+            .input-group__prepend https://
+            input#github-input.input-group__input.form-control(
+              v-model.trim="profile.github",
+              type="text"
+            )
 
         .form-group
           label(for="github-input") Телеграм
-          input#github-input.form-control(
-            v-model="profile.github",
-            type="text"
-          ) 
+          .form-group__input-group.input-group
+            .input-group__prepend @
+            input#github-input.input-group__input.form-control(
+              v-model.trim="profile.github",
+              type="text"
+            ) 
 
-        button.btn.btn-light.mr-2(type="submit", @click="prevStep") Сохранить
-        button.btn.btn-primary(type="submit") Зарегистрироваться
+        button.btn.btn-success.mr-2(@click="setProfileData", type="submit") Сохранить
+        button.btn.btn-danger(@click="leaveProfile", type="button") Выйти
 </template>
 
 
@@ -85,16 +98,18 @@ import { required, helpers, numeric } from "vuelidate/lib/validators";
 const alpha = helpers.regex("alpha", /^[a-zA-Zа-яА-Я]*$/);
 
 export default {
-  props: ["service", "isLoggedIn"],
+  props: {
+    service: Object,
+    isLoggedIn: Boolean,
+  },
   data() {
     return {
       profile: {
-        id: "",
         name: "Viktor",
         email: "motowest12@mail.ru",
         phone: "88-555",
         city: "Kemerovo",
-        birthday: "28.11.1990",
+        birthday: "",
         type: "front",
         github: "https://github.com/",
         telegram: "",
@@ -102,40 +117,60 @@ export default {
       },
     };
   },
+  created() {
+    if (this.isLoggedIn === false) {
+      this.$router.push("login");
+    }
+  },
   methods: {
     saveProfile() {},
     status(type) {
-      return {
-        "is-invalid warning": this.$v.profile[type].$error,
-      };
+      if (this.$v.profile[type].$error && this.$v.profile[type].$dirty) {
+        return "is-invalid warning";
+      } else if ( this.$v.profile[type].$dirty && !this.$v.profile[type].$erro) {
+        return "is-valid";
+      }
+    },
+    leaveProfile() {
+      this.service.leaveProfile();
+    },
+    setProfileData() {
+      this.service.setProfileData(this.profile);
     },
   },
   validations: {
     profile: {
-      id: {},
       name: {
         alpha,
         required,
       },
       email: {},
       phone: {
+        required,
         numeric,
       },
-      city: {},
-      birthday: {},
+      city: {
+				required
+			},
+      birthday: {
+				required
+			},
       type: {},
       github: {},
       telegram: {},
       about: {},
     },
   },
-  created() {
-    if (this.isLoggedIn === false) {
-      this.$router.push("login");
-    }
-  },
 };
 </script>
 
+
 <style lang="scss" scope>
+h2 {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 27px;
+  font-weight: bold;
+}
+
+
 </style>

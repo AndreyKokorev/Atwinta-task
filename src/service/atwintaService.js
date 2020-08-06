@@ -1,3 +1,5 @@
+import router from '../router/index';
+
 export default class atwintaService {
 
 	base_url = 'http://test.atwinta.ru/api/v1';
@@ -23,11 +25,8 @@ export default class atwintaService {
 	}
 
 	authorization = async (parameters) => {
-		const par = Object.keys(parameters)
-			.map(item => `&${item}=${parameters[item]}`)
-			.join('')
-
-		return await this.getResource('POST', `/auth/login?${par}`);
+		const url = this.formUrl(parameters);
+		return await this.getResource('POST', `/auth/login?${url}`);
 	}
 
 	autoAuthorization = async () => {
@@ -40,5 +39,21 @@ export default class atwintaService {
 
 	getWorkers = async () => {
 		return await this.getResource('GET', `/workers?page=1&per_page=12`)
+	}
+
+	leaveProfile = () => {
+		localStorage.removeItem('accessToken');
+		router.push('login');
+	}
+
+	setProfileData = async (parameters) => {
+		const url = this.formUrl(parameters);
+		return await this.getResource('POST', `/user?${url}`)
+	}
+
+	formUrl= (parameters) => {
+		return Object.keys(parameters)
+			.map(item => `&${item}=${parameters[item]}`)
+			.join('');
 	}
 }
