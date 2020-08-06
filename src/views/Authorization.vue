@@ -36,11 +36,16 @@
 </template>
 
 <script>
-import Popup from '../components/Popup';
+
 import { required, email, minLength } from "vuelidate/lib/validators";
 
 export default {
-  props: ["service", "isLoggedIn", "onLogin"],
+  props: {
+		service: Object,
+		onLogin: Function,
+		displayPopup: Function,
+		isLoggedIn: Boolean
+	},
   data() {
     return {
       restore: false,
@@ -49,9 +54,6 @@ export default {
         password: "I7ExBEs4YZ",
       },
     };
-	},
-	components: {
-		Popup
 	},
   created() {
     if (this.isLoggedIn === true) {
@@ -63,7 +65,8 @@ export default {
       const response = await this.service.authorization(this.formLog);
       console.log(response);
       localStorage.setItem("accessToken", response.token);
-      this.onLogin();
+			this.onLogin();
+			this.displayPopup('вы успешно авторизировались')
       this.$router.push("workers");
     },
     restorePassword: async () => {

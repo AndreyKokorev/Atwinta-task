@@ -16,8 +16,8 @@ export default {
     if (this.isLoggedIn === false) {
       this.$router.push('login');
     } else {
-      const res = await this.service.getWorkers();
-      console.log(res)
+      //const res = await this.service.getWorkers();
+      //console.log(res)
     }
   }
 }
