@@ -9,34 +9,38 @@
             input#email-input.form-control(
               :class="status('email')",
               @blur="$v.formLog.email.$touch()",
-              v-model="formLog.email",
+              v-model.trim="formLog.email",
               type="email",
               aria-describedby="emailHelp"
             )
             .invalid-feedback(v-if="!$v.formLog.email.required") Поле обязательно для заполнения
             .invalid-feedback(v-if="!$v.formLog.email.email") Поле должно быть email адресом
 
-          .form-group(v-if="!restore")
+          .form-group
             label(for="password-input") Пароль
             input#password-input.form-control(
               :class="status('password')",
               @blur="$v.formLog.password.$touch()",
-              v-model="formLog.password",
+              v-model.trim="formLog.password",
               type="password",
               aria-describedby="passwordHelp"
             )
             .invalid-feedback(v-if="!$v.formLog.password.required") Поле обязательно для заполнения
+            .invalid-feedback(
+              v-if="!$v.formLog.password.minLength && formLog.password.length > 0"
+            ) Пароль должен быть больше {{ $v.formLog.password.$params.minLength.min }} символов
 
           .btn-container
-            button.btn.btn-primary(type="submit") Войти
+            button.btn.btn-primary(:disabled="$v.$invalid", type="submit") Войти
             button.btn.btn-secondary(@click="restorePassword", type="button") Забыли пароль?
 </template>
 
 <script>
-import { required, email } from "vuelidate/lib/validators";
+import Popup from '../components/Popup';
+import { required, email, minLength } from "vuelidate/lib/validators";
 
 export default {
-  props: ['service', 'isLoggedIn', 'onLogin'],
+  props: ["service", "isLoggedIn", "onLogin"],
   data() {
     return {
       restore: false,
@@ -45,7 +49,10 @@ export default {
         password: "I7ExBEs4YZ",
       },
     };
-  },
+	},
+	components: {
+		Popup
+	},
   created() {
     if (this.isLoggedIn === true) {
       this.$router.push("workers");
@@ -54,7 +61,7 @@ export default {
   methods: {
     authUser: async function () {
       const response = await this.service.authorization(this.formLog);
-      console.log(response)
+      console.log(response);
       localStorage.setItem("accessToken", response.token);
       this.onLogin();
       this.$router.push("workers");
@@ -65,9 +72,14 @@ export default {
       console.log(response);
     },
     status(type) {
-      return [
-				this.$v.formLog[type].$error ? "is-invalid warning" : "is-valid"
-      ];
+      if (this.$v.formLog[type].$error && this.$v.formLog[type].$dirty) {
+        return "is-invalid warning";
+      } else if (
+        this.$v.formLog[type].$dirty &&
+        !this.$v.formLog[type].$error
+      ) {
+        return "is-valid";
+      }
     },
   },
   validations: {
@@ -78,6 +90,7 @@ export default {
       },
       password: {
         required,
+        minLength: minLength(6),
       },
     },
   },
