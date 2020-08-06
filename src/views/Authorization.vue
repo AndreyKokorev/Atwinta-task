@@ -62,10 +62,11 @@ export default {
   },
   methods: {
     authUser: async function () {
-      const response = await this.service.authorization(this.formLog);
-      console.log(response);
-      localStorage.setItem("accessToken", response.token);
-			this.onLogin();
+			const {token, user: { name }} = await this.service.authorization(this.formLog);
+			
+			localStorage.setItem("accessToken", token);
+			
+			this.onLogin(name);
 			this.displayPopup('вы успешно авторизировались')
       this.$router.push("workers");
     },

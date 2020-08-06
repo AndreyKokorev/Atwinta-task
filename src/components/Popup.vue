@@ -19,14 +19,14 @@ export default {
 .container {
   position: absolute;
   right: 40px;
-  top: 40px;
+  top: 25px;
   width: auto;
   display: grid;
   grid-template-columns: minmax(auto, 200px);
   grid-template-rows: min-content;
   justify-items: center;
   align-items: center;
-  padding: 15px;
+  padding: 12px;
   font-size: 15px;
   background: white;
   border: 2px solid rgb(167, 241, 137);
