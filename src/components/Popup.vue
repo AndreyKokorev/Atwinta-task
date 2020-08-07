@@ -17,7 +17,7 @@ export default {
 <style scoped>
 
 .container {
-  position: absolute;
+  position: fixed;
   right: 5px;
   top: 20px;
   width: auto;

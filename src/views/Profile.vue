@@ -3,9 +3,11 @@
   .row
     .col-sm-6.mx-auto
       h2.mb-5 Профиль
-      form(@submit.prevent="saveProfile", novalidate)
+      form(@submit.prevent="setProfileData", novalidate)
         .form-group
-          label.form-group__label.form-group__label--required(for="name-input") Имя
+          label.form-group__label.form-group__label--required(
+            for="name-input"
+          ) Имя
           input#name-input.form-group__input.form-control(
             :class="status('name')",
             @blur="$v.profile.name.$touch()",
@@ -19,7 +21,7 @@
         .form-group
           label.form-group__label(for="email-input") Email
           input#email-input.form-control.form-group__input(
-						v-model="profile.email"
+            v-model="profile.email",
             type="email",
             aria-describedby="emailHelp",
             disabled
@@ -31,14 +33,14 @@
           ) Телефон
           .form-group__input-group.input-group
             .input-group__prepend +7
-            input.input-group__input.form-control#phone-input(
-							:class="status('phone')",
+            input#phone-input.input-group__input.form-control(
+              :class="status('phone')",
               @blur="$v.profile.phone.$touch()",
               v-model.trim="profile.phone",
               type="tel"
             )
           .form-group__feedback(v-if="!$v.profile.phone.required") Обязательное поле
-          .form-group__feedback(v-if="!$v.profile.phone.numeric") Некоректный номер
+          .form-group__feedback(v-if="!$v.profile.phone.numeric") Некорректный номер
 
         .form-group
           label.form-group__label.form-group__label--required(for="city-input") Населённый пункт
@@ -53,19 +55,17 @@
         .form-group
           label.form-group__label.form-group__label--required(
             for="birthday-input"
-          ) Год рождения
+          ) Дата рождения
           input#birthday-input.form-group__input.form-control(
-						:class="status('birthday')",
-						@blur="$v.profile.birthday.$touch()",
+            :class="status('birthday')",
+            @blur="$v.profile.birthday.$touch()",
             v-model="profile.birthday",
             type="date"
           )
 
         .form-group
           label.form-group__label(for="type-input") Тип задания
-          select#type-input.form-group__select.form-control(
-            disabled
-          )
+          select#type-input.form-group__select.form-control(disabled)
             option(disabled) Выберите один из вариантов
             option(value="front") Frontend
             option(value="back") Backend
@@ -84,12 +84,18 @@
           .form-group__input-group.input-group
             .input-group__prepend @
             input#github-input.input-group__input.form-control(
-              v-model.trim="profile.github",
+              v-model.trim="profile.telegram",
               type="text"
             ) 
 
-        button.btn.btn-success.mr-2(@click="setProfileData", type="submit") Сохранить
-        button.btn.btn-danger(@click="leaveProfile", type="button") Выйти
+        .form-group
+          label.form-group__label(for="about-input") О себе
+          textarea#about-input.form-group__input.form-control(
+            v-model="profile.about",
+          )
+
+        button.btn.btn-success.mr-2(type="submit") Сохранить
+        button.btn.btn-danger(@click="logOff", type="button") Выйти
 </template>
 
 
@@ -101,42 +107,49 @@ export default {
   props: {
     service: Object,
     isLoggedIn: Boolean,
+    logOff: Function,
+    displayPopup: Function
   },
   data() {
     return {
       profile: {
-        name: "Viktor",
-        email: "motowest12@mail.ru",
-        phone: "88-555",
-        city: "Kemerovo",
+        name: "",
+        email: "",
+        phone: "",
+        city: "",
         birthday: "",
-        type: "front",
-        github: "https://github.com/",
+        type: "",
+        github: "",
         telegram: "",
         about: "",
+        is_finished: false
       },
     };
   },
-  created() {
+  created: async function () {
     if (this.isLoggedIn === false) {
       this.$router.push("login");
+    } else {
+      const data = await this.service.getProfileData();
+      this.profile = { ...data, name: data.name };
     }
   },
   methods: {
-    saveProfile() {},
     status(type) {
       if (this.$v.profile[type].$error && this.$v.profile[type].$dirty) {
         return "is-invalid warning";
-      } else if ( this.$v.profile[type].$dirty && !this.$v.profile[type].$erro) {
+      } else if (this.$v.profile[type].$dirty && !this.$v.profile[type].$erro) {
         return "is-valid";
       }
     },
+    setProfileData: async function () {
+     await this.service.setProfileData(this.profile);
+     this.displayPopup('Данные успешно сохранены');
+    },
     leaveProfile() {
-      this.service.leaveProfile();
-    },
-    setProfileData() {
-      this.service.setProfileData(this.profile);
-    },
+      this.logOff();
+      this.displayPopup('Вы вышли из аккаунта');
+    }
   },
   validations: {
     profile: {
@@ -150,11 +163,11 @@ export default {
         numeric,
       },
       city: {
-				required
-			},
+        required,
+      },
       birthday: {
-				required
-			},
+        required,
+      },
       type: {},
       github: {},
       telegram: {},
@@ -171,6 +184,4 @@ h2 {
   font-size: 27px;
   font-weight: bold;
 }
-
-
 </style>
