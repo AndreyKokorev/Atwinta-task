@@ -38,8 +38,12 @@ export default class atwintaService {
 		return await this.getResource('POST', `/auth/restore?email=${email}`);
 	}
 
-	getWorkers = async () => {
-		return await this.getResource('GET', `/workers?page=1&per_page=12`);
+	getWorkerProfile = async (id) => {
+		return await this.getResource('GET', `/workers/${id}`);
+	}
+
+	getWorkers = async (page) => {
+		return await this.getResource('GET', `/workers?page=${page}`);
 	}
 
 	getProfileData = async () => {
@@ -51,7 +55,7 @@ export default class atwintaService {
 		return await this.getResource('POST', `/user`, json);
 	}
 
-	formUrl= (parameters) => {
+	formUrl = (parameters) => {
 		return Object.keys(parameters)
 			.map(item => `&${item}=${parameters[item]}`)
 			.join('');

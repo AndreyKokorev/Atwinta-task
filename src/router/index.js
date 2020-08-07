@@ -11,12 +11,17 @@ const routes = [
   },
   {
     path: '/workers',
-    component: () => import('../views/Workers.vue'),
+    component: () => import('../views/Workers'),
+    props: true
+  },
+  {
+    path: '/workers/:id',
+    component: () => import('../components/WorkerProfile'),
     props: true
   },
   {
     path: '/profile',
-    component: () => import('../views/Profile.vue'),
+    component: () => import('../views/Profile'),
     props: true
   }
 ]
