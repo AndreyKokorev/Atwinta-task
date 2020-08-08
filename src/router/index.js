@@ -3,19 +3,18 @@ import VueRouter from 'vue-router';
 
 Vue.use(VueRouter)
 
-const routes = [
-  {
+const routes = [{
     path: '/',
     redirect: {
-      name:'login'
+      name: 'auth'
     },
     meta: {
       guest: true
     }
   },
   {
-    path: '/login',
-    name: 'login',
+    path: '/auth',
+    name: 'auth',
     component: () => import('../views/Authorization'),
     meta: {
       guest: true
@@ -43,6 +42,14 @@ const routes = [
     meta: {
       requiresAuth: true
     }
+  },
+  {
+    path: '/auth/restore/confirm',
+    name: 'restore',
+    component: () => import('../views/RestorePassword'),
+    meta: {
+      guest: true
+    }
   }
 ]
 
@@ -54,22 +61,24 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const accessToken = localStorage.getItem('accessToken')
 
-  if(to.matched.some(record => record.meta.requiresAuth)) {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
 
-      if (!accessToken) {
-          next({
-              path: '/login',
-          })
-      } else {
-        next()
-      }
-  } else if(to.matched.some(record => record.meta.guest)){
+    if (!accessToken) {
+      next({
+        path: '/auth',
+      })
+    } else {
+      next()
+    }
+  } else if (to.matched.some(record => record.meta.guest)) {
 
-    if(accessToken) {
+    if (accessToken) {
       next('workers')
     } else {
       next()
-    }   
+    }
+  } else {
+    next()
   }
 })
 

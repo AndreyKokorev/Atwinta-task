@@ -2,7 +2,7 @@
 #app
   .nav
     .nav__item-wrapper(v-if="!isLoggedIn")
-      router-link.nav__item(to="/login") {{ 'Войти' }}
+      router-link.nav__item(to="/auth" exact) {{ 'Войти' }}
     .nav__item-wrapper(v-if="isLoggedIn")
       router-link.nav__item(to="/workers") Сотрудники
     .nav__item-wrapper(v-if="isLoggedIn")
@@ -14,26 +14,26 @@
     :displayPopup="displayPopup"
   )
   Popup(:message="message", :isVisible="isVisible")
+  button(@click="sendEmail()") Email
 </template>
 
 <script>
 //ToDo
 //Password recovering
-//fix pagiantion
 //Profile, worker, worker profile styling
 
-import atwintaService from "../src/service/atwintaService";
-import Authorization from "./views/Authorization";
-import Popup from "./components/Popup";
+import atwintaService from '../src/service/atwintaService';
+import Authorization from './views/Authorization';
+import Popup from './components/Popup';
 
 export default {
   data() {
     return {
       service: new atwintaService(),
       isLoggedIn: false,
-      message: "",
+      message: '',
       isVisible: false,
-      profileName: "",
+      profileName: '',
     };
   },
   components: {
@@ -41,10 +41,10 @@ export default {
     Popup,
   },
   created: async function () {
-    if (localStorage.getItem("accessToken")) {
+    if (localStorage.getItem('accessToken')) {
       const data = await this.service.autoAuthorization();
       this.onLogin(data.name);
-      this.displayPopup("Вы авторизированы");
+      this.displayPopup('Вы авторизированы');
     }
   },
   methods: {
@@ -53,10 +53,10 @@ export default {
       this.profileName = name;
     },
     logOff() {
-      localStorage.removeItem("accessToken");
+      localStorage.removeItem('accessToken');
       this.isLoggedIn = false;
-      this.profileName = "";
-      this.$router.push("login");
+      this.profileName = '';
+      this.$router.push('auth');
     },
     displayPopup(message) {
       this.message = message;
@@ -66,6 +66,10 @@ export default {
         this.isVisible = false;
       }, 2000);
     },
+    sendEmail() {
+      const res = this.service.sendEmail('andrey.kokorev.w.dev@gmail.com');
+      console.log(res)
+    }
   },
 };
 </script>

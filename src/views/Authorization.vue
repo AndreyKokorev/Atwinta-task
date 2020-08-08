@@ -13,8 +13,14 @@
 							type="email",
 							aria-describedby="emailHelp"
 						)
-						.form-group__feedback(v-if="!$v.formLog.email.required") Обязательное поле
-						.form-group__feedback(v-if="!$v.formLog.email.email") Поле должно быть email адресом
+
+						.form-group__feedback(
+							v-if="!$v.formLog.email.required && $v.formLog.email.$dirty"
+							) Обязательное поле
+							
+						.form-group__feedback(
+							v-if="!$v.formLog.email.email && $v.formLog.email.$dirty"
+							) Поле должно быть email адресом
 
 					.form-group
 						label.form-group__label(for="password-input") Пароль
@@ -25,9 +31,13 @@
 							type="password",
 							aria-describedby="passwordHelp"
 						)
-						.form-group__feedback(v-if="!$v.formLog.password.required") Обязательное поле
+
 						.form-group__feedback(
-							v-if="!$v.formLog.password.minLength && formLog.password.length > 0"
+							v-if="$v.formLog.password.$dirty && !$v.formLog.password.required"
+							) Обязательное поле 
+
+						.form-group__feedback(
+							v-if="$v.formLog.password.$dirty && !$v.formLog.password.minLength > 0"
 						) Пароль должен быть не меньше {{ $v.formLog.password.$params.minLength.min }} символов
 
 					.btn-container
@@ -36,7 +46,6 @@
 </template>
 
 <script>
-
 import { required, email, minLength } from "vuelidate/lib/validators";
 
 export default {
@@ -50,23 +59,20 @@ export default {
 		return {
 			restore: false,
 			formLog: {
-				email: "andrey.kokorev.w.dev@gmail.com",
-				password: "I7ExBEs4YZ",
+				email: '',
+				password: '',
 			},
 		};
 	},
 	methods: {
 		authUser: async function () {
 			const { token, user: { name } } = await this.service.authorization(this.formLog);
+
 			localStorage.setItem("accessToken", token);
 			
 			this.onLogin(name);
 			this.displayPopup('вы успешно авторизировались')
 			this.$router.push("workers");
-		},
-		restorePassword: async () => {
-			// this.restore = true;
-			// const response = await this.service.restorePassword(this.formLog.email);
 		},
 		status(type) {
 			if (this.$v.formLog[type].$error && this.$v.formLog[type].$dirty) {
@@ -78,6 +84,11 @@ export default {
 				return "is-valid";
 			}
 		},
+		restorePassword() {
+      this.$router.push({
+				name: 'restore'
+			})
+    }
 	},
 	validations: {
 		formLog: {

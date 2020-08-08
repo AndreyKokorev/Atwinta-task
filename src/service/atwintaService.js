@@ -4,17 +4,18 @@ export default class atwintaService {
 	base_url = 'http://test.atwinta.ru/api/v1';
 
 	getResource = async (method, url, body = null) => {
-		const accessToken = localStorage.getItem('accessToken');
+		const accessToken = localStorage.getItem('accessToken') || null;
 		const req_param = {
 			method,
 			headers: {
 				'Authorization': 'Bearer ' + accessToken,
-				"Content-Type": "application/json",
+				'Content-Type': 'application/json',
+				
 			},
 			body
 		};
 		const response = await fetch(
-			`${this.base_url}${url}`,
+			`${this.base_url}${url}&token=${accessToken}`,
 			req_param);
 
 		if (!response.ok) {
@@ -26,7 +27,7 @@ export default class atwintaService {
 	}
 
 	authorization = async (parameters) => {
-		const url = this.formUrl(parameters);
+		const url = this.formParameters(parameters);
 		return await this.getResource('POST', `/auth/login?${url}`);
 	}
 
@@ -34,8 +35,14 @@ export default class atwintaService {
 		return await this.getResource('POST', `/user`);
 	}
 
-	restorePassword = async (email) => {
-		return await this.getResource('POST', `/auth/restore?email=${email}`);
+	restorePassword = async (parameters) => {
+		const url = this.formParameters(parameters);
+		console.log(url)
+		return await this.getResource('POST', `/auth/restore/confirm?${url}`);
+	}
+
+	sendEmail = async(email) => {
+		return await this.getResource('POST', `/auth/restore?email=${email}}`);
 	}
 
 	getWorkerProfile = async (id) => {
@@ -55,7 +62,7 @@ export default class atwintaService {
 		return await this.getResource('POST', `/user`, json);
 	}
 
-	formUrl = (parameters) => {
+	formParameters = (parameters) => {
 		return Object.keys(parameters)
 			.map(item => `&${item}=${parameters[item]}`)
 			.join('');
