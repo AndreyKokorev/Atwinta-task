@@ -5,41 +5,20 @@
 //          <WorkerCart :name="worker.name" :image="worker.image"></WorkerCart>
 // 
 </template>
-<template >
-  <div class="workers">
-    <div class="container">
-      <div class="wrapper" :key="worker.id" v-for="worker in workersData">
-        <WorkerCart 
-					:id="worker.id" 
-					:name="worker.name" 
-					:image="worker.image">
-				</WorkerCart>
-      </div>
-    </div>
-		<div class="pagination">
-			<button 
-				:class="[!prevPage ? 'disabled' : null, 'prev-page-btn']" 
-				@click="switchPage(prevPage)" 
-				:disabled="!prevPage">
-			</button>
-			<ul class="pages-list" @click.capture="switchPage($event)">
-				<li 			
-					class="pages-list__item" 
-					:key="page" 
-					v-for="page in totalPages"
-				>
-					<div :class="[currentPage == page ? 'active-page' : null]"> 
-						{{ page }} 
-					</div>			
-				</li>
-			</ul>
-			<button 
-				:class="[!nextPage ? 'disabled' : null, 'next-page-btn']" 
-				@click="switchPage(nextPage)" 
-				:disabled="!nextPage">
-			</button>
-		</div>
-  </div>
+<template lang="pug">
+.workers
+  .container
+    .wrapper(:key='worker.id' v-for='worker in workersData')
+      WorkerCart(:id='worker.id' :name='worker.name' :image='worker.image')
+  .pagination
+    button(:class="[!prevPage ? 'disabled' : null, 'prev-page-btn']" @click='switchPage(prevPage)' :disabled='!prevPage')
+    ul.pages-list(@click.capture='switchPage($event)')
+      li.pages-list__item(:key='page' v-for='page in totalPages')
+        div(:class="[currentPage == page ? 'active-page' : null]")
+          | {{ page }}
+    button(:class="[!nextPage ? 'disabled' : null, 'next-page-btn']" @click='switchPage(nextPage)' :disabled='!nextPage')
+
+  
 </template>
 
 <script>
@@ -50,10 +29,12 @@ export default {
   components: {
     WorkerCart,
     Spinner,
+	},	
+	props: {
+		service: Object,
+		isLoggedIn: Boolean,
+		login: Function
 	},
-	
-	props: ["service", "isLoggedIn"],
-	
   data() {
     return {
 			workersData: [],
@@ -63,7 +44,6 @@ export default {
 			currentPage: null			
     };
 	},
-	
   created: async function () {
     if (this.isLoggedIn === false) {
       this.$router.push("login");

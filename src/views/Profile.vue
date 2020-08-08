@@ -135,7 +135,7 @@ export default {
   },
   created: async function () {
     if (this.isLoggedIn === false) {
-      this.$router.push("login");
+      this.$router.push("/login");
     } else {
       const data = await this.service.getProfileData();
       this.profile = { ...data, name: data.name };

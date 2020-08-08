@@ -72,7 +72,6 @@ export default {
 		restorePassword: async () => {
 			this.restore = true;
 			const response = await this.service.restorePassword(this.formLog.email);
-			console.log(response);
 		},
 		status(type) {
 			if (this.$v.formLog[type].$error && this.$v.formLog[type].$dirty) {
