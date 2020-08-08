@@ -1,22 +1,19 @@
 <template lang="pug">
 #app
   .nav
+    .nav__item-wrapper(v-if="!isLoggedIn")
+      router-link.nav__item(to="/login") {{ 'Войти' }}
     .nav__item-wrapper(v-if="isLoggedIn")
       router-link.nav__item(to="/workers") Сотрудники
     .nav__item-wrapper(v-if="isLoggedIn")
-      router-link.nav__item(to="/workers/:id")
-    .nav__item-wrapper(v-if="isLoggedIn")
       router-link.nav__item(to="/profile") {{ profileName }}
-    .nav__item-wrapper(v-if="!isLoggedIn")
-      router-link.nav__item(to="/login") {{ 'Войти' }}
   router-view(
     :service="service",
-    :isLoggedIn="isLoggedIn",
     :onLogin="onLogin",
     :logOff="logOff",
     :displayPopup="displayPopup"
   )
-  Popup(:message="message" :isVisible="isVisible")
+  Popup(:message="message", :isVisible="isVisible")
 </template>
 
 <script>
@@ -34,7 +31,7 @@ export default {
   data() {
     return {
       service: new atwintaService(),
-      isLoggedIn: true,
+      isLoggedIn: false,
       message: "",
       isVisible: false,
       profileName: "",
@@ -45,15 +42,10 @@ export default {
     Popup,
   },
   created: async function () {
-    const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
+    if (localStorage.getItem("accessToken")) {
       const data = await this.service.autoAuthorization();
-      //const lastRout = this.$router.history.$fullPath;
-      //console.log(lastRout)
       this.onLogin(data.name);
       this.displayPopup("Вы авторизированы");
-    } else {
-      this.$router.push("login");
     }
   },
   methods: {
@@ -67,11 +59,6 @@ export default {
       this.profileName = "";
       this.$router.push("login");
     },
-    // loginWaiting() {
-    //   const int = setInterval(() => {
-    //     if (this.isLoggedIn) return true;
-    //   }, 40);
-    // },
     displayPopup(message) {
       this.message = message;
       this.isVisible = true;

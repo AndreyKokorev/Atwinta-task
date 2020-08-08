@@ -1,24 +1,30 @@
 // <template lang="pug">
 //   .workers
 //     .container
-          .wrapper(v-for="for worker in workersData")
+  .wrapper(v-for="for worker in workersData")
 //          <WorkerCart :name="worker.name" :image="worker.image"></WorkerCart>
 // 
 </template>
 <template lang="pug">
 .workers
   .container
-    .wrapper(:key='worker.id' v-for='worker in workersData')
-      WorkerCart(:id='worker.id' :name='worker.name' :image='worker.image')
+    .wrapper(:key="worker.id", v-for="worker in workersData")
+      WorkerCart(:id="worker.id", :name="worker.name", :image="worker.image")
   .pagination
-    button(:class="[!prevPage ? 'disabled' : null, 'prev-page-btn']" @click='switchPage(prevPage)' :disabled='!prevPage')
-    ul.pages-list(@click.capture='switchPage($event)')
-      li.pages-list__item(:key='page' v-for='page in totalPages')
+    button(
+      :class="[!prevPage ? 'disabled' : null, 'prev-page-btn']",
+      @click="switchPage(prevPage)",
+      :disabled="!prevPage"
+    )
+    ul.pages-list(@click.capture="switchPage($event)")
+      li.pages-list__item(:key="page", v-for="page in totalPages")
         div(:class="[currentPage == page ? 'active-page' : null]")
           | {{ page }}
-    button(:class="[!nextPage ? 'disabled' : null, 'next-page-btn']" @click='switchPage(nextPage)' :disabled='!nextPage')
-
-  
+    button(
+      :class="[!nextPage ? 'disabled' : null, 'next-page-btn']",
+      @click="switchPage(nextPage)",
+      :disabled="!nextPage"
+    )
 </template>
 
 <script>
@@ -29,55 +35,48 @@ export default {
   components: {
     WorkerCart,
     Spinner,
-	},	
-	props: {
-		service: Object,
-		isLoggedIn: Boolean,
-		login: Function
-	},
+  },
+  props: {
+    service: Object
+  },
   data() {
     return {
-			workersData: [],
-			totalPages: '',
-			nextPage: null,
-			prevPage: null,
-			currentPage: null			
+      workersData: [],
+      totalPages: "",
+      nextPage: null,
+      prevPage: null,
+      currentPage: null,
     };
-	},
-  created: async function () {
-    if (this.isLoggedIn === false) {
-      this.$router.push("login");
-    } else {
-			this.switchPage(1)		
-    }
-	},
+  },
+  created() {
+    this.switchPage(1);
+  },
 
-	methods: {
-		switchPage: async function(page) {
-			console.log(page)
-			const res = await this.service.getWorkers(page);
+  methods: {
+    switchPage: async function (page) {
+      console.log(page);
+      const res = await this.service.getWorkers(page);
 
-			this.workersData = res.data;
-			this.totalPages = res.last_page;
+      this.workersData = res.data;
+      this.totalPages = res.last_page;
 
-			if(res.next_page_url) {
-				this.nextPage = res.next_page_url[res.next_page_url.length - 1];
-			} else {
-				this.nextPage = false;
-			}
+      if (res.next_page_url) {
+        this.nextPage = res.next_page_url[res.next_page_url.length - 1];
+      } else {
+        this.nextPage = false;
+      }
 
-			if(res.prev_page_url) {
-				this.prevPage = res.prev_page_url[res.prev_page_url.length - 1];
-			} else {
-				this.prevPage = false;
-			}
-		},
-	}
+      if (res.prev_page_url) {
+        this.prevPage = res.prev_page_url[res.prev_page_url.length - 1];
+      } else {
+        this.prevPage = false;
+      }
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
-
 .workers {
   display: grid;
   justify-content: center;
@@ -99,73 +98,73 @@ export default {
 }
 
 .pagination {
-	position: relative;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	max-width:300px;
-	margin: 50px 0;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 300px;
+  margin: 50px 0;
 }
 
 .pages-list {
-	display: flex;
-	flex-grow:1;
-	justify-content: space-around;
-	align-items: center;
-	height: 20px;
-	margin: 0 10px;
-	padding: 0;
-	list-style: none;
+  display: flex;
+  flex-grow: 1;
+  justify-content: space-around;
+  align-items: center;
+  height: 20px;
+  margin: 0 10px;
+  padding: 0;
+  list-style: none;
 
-	&__item {
-		transition: 150ms;
-	}
+  &__item {
+    transition: 150ms;
+  }
 
-	&__item:hover {
-		font-size: 25px;
-		margin-left:-2px;
-		margin-right: -2px;
-		filter: drop-shadow(0 0 5px black);
-	}
+  &__item:hover {
+    font-size: 25px;
+    margin-left: -2px;
+    margin-right: -2px;
+    filter: drop-shadow(0 0 5px black);
+  }
 }
 
 button {
-	position: absolute;
-	width: 15px;
-	height: 15px;
-	border-width: 0;
-	border-left: 2px solid black;
-	border-top: 2px solid black;
-	background: transparent;
-	transition: 200ms;
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  border-width: 0;
+  border-left: 2px solid black;
+  border-top: 2px solid black;
+  background: transparent;
+  transition: 200ms;
 }
 
 button:hover {
-	width: 17px;
-	height: 17px;
+  width: 17px;
+  height: 17px;
 }
 
 button:active {
-	box-shadow: none;
+  box-shadow: none;
 }
 
 .next-page-btn {
-	right: -15px;
-	transform-origin: 50% 50%;
-	transform: rotate(135deg);
+  right: -15px;
+  transform-origin: 50% 50%;
+  transform: rotate(135deg);
 }
 
 .prev-page-btn {
-	left: -15px;
-	transform-origin: 50% 50%;
-	transform: rotate(-45deg);
+  left: -15px;
+  transform-origin: 50% 50%;
+  transform: rotate(-45deg);
 }
 
 .disabled {
-	border-color: rgb(194, 193, 193);
+  border-color: rgb(194, 193, 193);
 }
 
 .active-page {
-	color: blue;
+  color: blue;
 }
 </style>

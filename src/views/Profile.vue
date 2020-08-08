@@ -112,9 +112,9 @@ export default {
   },
   props: {
     service: Object,
-    isLoggedIn: Boolean,
     logOff: Function,
-    displayPopup: Function
+    displayPopup: Function,
+    onLogin: Function
   },
   data() {
     return {
@@ -134,13 +134,9 @@ export default {
     };
   },
   created: async function () {
-    if (this.isLoggedIn === false) {
-      this.$router.push("/login");
-    } else {
-      const data = await this.service.getProfileData();
-      this.profile = { ...data, name: data.name };
-      this.isLoading = false;
-    }
+    const data = await this.service.getProfileData();
+    this.isLoading = false;
+    this.profile = { ...data, name: data.name };
   },
   methods: {
     status(type) {

@@ -55,11 +55,6 @@ export default {
 			},
 		};
 	},
-	created() {
-		if (this.isLoggedIn === true) {
-			this.$router.push("workers");
-		}
-	},
 	methods: {
 		authUser: async function () {
 			const { token, user: { name } } = await this.service.authorization(this.formLog);
@@ -70,8 +65,8 @@ export default {
 			this.$router.push("workers");
 		},
 		restorePassword: async () => {
-			this.restore = true;
-			const response = await this.service.restorePassword(this.formLog.email);
+			// this.restore = true;
+			// const response = await this.service.restorePassword(this.formLog.email);
 		},
 		status(type) {
 			if (this.$v.formLog[type].$error && this.$v.formLog[type].$dirty) {
