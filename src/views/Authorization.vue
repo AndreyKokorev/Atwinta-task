@@ -116,7 +116,6 @@ export default {
 
 	&__feedback {
 		position: absolute;
-
 	}
 }
 </style>

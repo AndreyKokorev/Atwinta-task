@@ -21,7 +21,6 @@
 //Password recovering
 //fix pagiantion
 //Profile, worker, worker profile styling
-//Routing
 
 import atwintaService from "../src/service/atwintaService";
 import Authorization from "./views/Authorization";

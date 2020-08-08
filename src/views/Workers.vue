@@ -1,12 +1,6 @@
-// <template lang="pug">
-//   .workers
-//     .container
-  .wrapper(v-for="for worker in workersData")
-//          <WorkerCart :name="worker.name" :image="worker.image"></WorkerCart>
-// 
-</template>
 <template lang="pug">
-.workers
+Spinner(v-if="isLoading")
+.workers(v-else)
   .container
     .wrapper(:key="worker.id", v-for="worker in workersData")
       WorkerCart(:id="worker.id", :name="worker.name", :image="worker.image")
@@ -16,13 +10,13 @@
       @click="switchPage(prevPage)",
       :disabled="!prevPage"
     )
-    ul.pages-list(@click.capture="switchPage($event)")
+    ul.pages-list(@click.capture="switchPage($event.target.textContent)")
       li.pages-list__item(:key="page", v-for="page in totalPages")
         div(:class="[currentPage == page ? 'active-page' : null]")
-          | {{ page }}
+          | {{ page }}{{current_page}}
     button(
       :class="[!nextPage ? 'disabled' : null, 'next-page-btn']",
-      @click="switchPage(nextPage)",
+      @click="switchPage(nextPage), scrollPage()",
       :disabled="!nextPage"
     )
 </template>
@@ -37,7 +31,7 @@ export default {
     Spinner,
   },
   props: {
-    service: Object
+    service: Object,
   },
   data() {
     return {
@@ -45,20 +39,20 @@ export default {
       totalPages: "",
       nextPage: null,
       prevPage: null,
-      currentPage: null,
+			current_page: null,
+			isLoading: true
     };
   },
   created() {
     this.switchPage(1);
   },
-
   methods: {
     switchPage: async function (page) {
-      console.log(page);
+			this.isLoading = true;
       const res = await this.service.getWorkers(page);
-
       this.workersData = res.data;
-      this.totalPages = res.last_page;
+			this.totalPages = res.last_page;
+			this.currentPage = res.current_page;
 
       if (res.next_page_url) {
         this.nextPage = res.next_page_url[res.next_page_url.length - 1];
@@ -70,8 +64,14 @@ export default {
         this.prevPage = res.prev_page_url[res.prev_page_url.length - 1];
       } else {
         this.prevPage = false;
-      }
-    },
+			}
+			this.isLoading = false;
+			console.log(this.currentPage)
+		},
+
+		scrollPage(){
+			window.scrollTo(0,0);
+		}
   },
 };
 </script>
@@ -102,8 +102,9 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 300px;
+  max-width: 320px;
   margin: 50px 0;
+  padding: 0 10px;
 }
 
 .pages-list {
@@ -117,14 +118,12 @@ export default {
   list-style: none;
 
   &__item {
+    width: 11%;
     transition: 150ms;
   }
 
   &__item:hover {
-    font-size: 25px;
-    margin-left: -2px;
-    margin-right: -2px;
-    filter: drop-shadow(0 0 5px black);
+    font-weight: bold;
   }
 }
 
@@ -132,32 +131,38 @@ button {
   position: absolute;
   width: 15px;
   height: 15px;
-  border-width: 0;
+  border-width: 0px;
   border-left: 2px solid black;
   border-top: 2px solid black;
   background: transparent;
+	outline: none;
   transition: 200ms;
 }
 
-button:hover {
-  width: 17px;
-  height: 17px;
-}
-
-button:active {
-  box-shadow: none;
+button:hover:not(:disabled) {
+  filter: drop-shadow(0 0 3px rgb(21, 21, 185));
 }
 
 .next-page-btn {
-  right: -15px;
+  right: 5px;
   transform-origin: 50% 50%;
   transform: rotate(135deg);
+
+  &:active {
+    right: 2px;
+  }
 }
 
 .prev-page-btn {
-  left: -15px;
+  left: 5px;
   transform-origin: 50% 50%;
   transform: rotate(-45deg);
+
+  &:active {
+    left: 2px;
+    transform-origin: 50% 50%;
+    transform: rotate(-45deg);
+  }
 }
 
 .disabled {
