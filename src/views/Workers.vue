@@ -3,7 +3,7 @@ Spinner(v-if="isLoading")
 .workers(v-else)
   .container
     .wrapper(:key="worker.id", v-for="worker in workersData")
-      WorkerCart(:id="worker.id", :name="worker.name", :image="worker.image")
+      WorkerCard(:id="worker.id", :name="worker.name", :image="worker.image")
   .pagination
     button(
       :class="[!prevPage ? 'disabled' : null, 'prev-page-btn']",
@@ -22,12 +22,12 @@ Spinner(v-if="isLoading")
 </template>
 
 <script>
-import WorkerCart from "../components/WorkerCart";
+import WorkerCard from "../components/WorkerCard";
 import Spinner from "../components/Spinner";
 
 export default {
   components: {
-    WorkerCart,
+    WorkerCard,
     Spinner,
   },
   props: {
@@ -66,7 +66,6 @@ export default {
         this.prevPage = false;
 			}
 			this.isLoading = false;
-			console.log(this.currentPage)
 		},
 
 		scrollPage(){
@@ -87,14 +86,20 @@ export default {
 
 .container {
   display: grid;
-  justify-items: center;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 300px));
+  //justify-items: center;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 300px));
+  //justify-content: center;
   grid-gap: 20px;
 }
 
 .wrapper {
+  //width: 100%;
   padding: 20px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+img {
+  max-width: 100%;
 }
 
 .pagination {
@@ -171,5 +176,18 @@ button:hover:not(:disabled) {
 
 .active-page {
   color: blue;
+}
+
+@media screen and(max-width: 1200px) {
+  .container {
+  //grid-template-columns: repeat(auto-fit, minmax(200px, 400px));
+
+}
+
+.wrapper {
+  width: 100%;
+  padding: 20px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
 }
 </style>

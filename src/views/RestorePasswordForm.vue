@@ -2,7 +2,7 @@
 .container.mt-4
   .row
     .col-sm-6.mx-auto
-      form(@submit.prevent, novalidate)
+      form(@submit.prevent="restorePassword", novalidate)
         .form-group
           label.form-group__label(for="password-input") Пароль
           input#password-input.form-group__input.form-control(
@@ -30,9 +30,8 @@
             v-if="!$v.formRest.password_confirmation.sameAs"
           ) Пароли не совпадают
 
-        button.btn.btn-secondary(@click="$router.push('/auth')", type="submit") Назад
-        button.btn.btn-primary(
-          @click="restorePassword",
+        button.btn-back.btn.btn-secondary(@click="$router.push('/auth/restore')", type="submit") Назад
+        button.btn-restore.btn.btn-primary(
           :disabled="$v.$invalid",
           type="submit"
         ) Сбросить пароль
@@ -98,5 +97,9 @@ export default {
 <style lang="scss" scoped>
 .warning {
   background: rgba(228, 25, 25, 0.11);
+}
+
+.btn-back {
+  margin-right: 20px; 
 }
 </style>

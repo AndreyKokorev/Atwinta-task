@@ -44,9 +44,17 @@ const routes = [{
     }
   },
   {
+    path: '/auth/restore',
+    name: 'restore',
+    component: () => import('../views/RestoreEmailForm'),
+    meta: {
+      guest: true
+    }
+  },
+  {
     path: '/auth/restore/confirm',
     name: 'restore',
-    component: () => import('../views/RestorePassword'),
+    component: () => import('../views/RestorePasswordForm'),
     meta: {
       guest: true
     }
@@ -54,8 +62,7 @@ const routes = [{
 ]
 
 const router = new VueRouter({
-  routes,
-  mode: 'history'
+  routes
 });
 
 router.beforeEach((to, from, next) => {

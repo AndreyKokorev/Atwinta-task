@@ -1,8 +1,8 @@
 <template lang="pug">
-.cart
-  img.cart__image(:src="image")
-  .cart__name {{ name}}
-  .cart__action( @click="$router.push(`/workers/${id}`)" ) Открыть профиль
+.card
+  img.card__image(:src="image")
+  .card__name {{ name }}
+  .card__action( @click="$router.push(`/workers/${id}`)" ) Открыть профиль
 </template>
 
 
@@ -13,7 +13,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.cart {
+.card {
   display: grid;
   grid-template-rows: 4fr 2fr 0.5fr;
 

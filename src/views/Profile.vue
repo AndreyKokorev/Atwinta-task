@@ -19,51 +19,53 @@
             )
             .form-group__feedback(v-if="!$v.profile.name.required") Обязательное поле
             .form-group__feedback(v-if="!$v.profile.name.alpha") Используйте только символы алфавита
-
-          .form-group
-            label.form-group__label(for="email-input") Email
-            input#email-input.form-control.form-group__input(
-              v-model="profile.email",
-              type="email",
-              aria-describedby="emailHelp",
-              disabled
-            )
-
-          .form-group
-            label.form-group__label.form-group__label--required(
-              for="phone-input"
-            ) Телефон
-            .form-group__input-group.input-group
-              .input-group__prepend +7
-              input#phone-input.input-group__input.form-control(
-                :class="status('phone')",
-                @blur="$v.profile.phone.$touch()",
-                v-model.trim="profile.phone",
-                type="tel"
+          .form-container 
+            .form-group
+              label.form-group__label(for="email-input") Почта
+              input#email-input.form-control.form-group__input(
+                v-model="profile.email",
+                type="email",
+                aria-describedby="emailHelp",
+                disabled
               )
-            .form-group__feedback(v-if="!$v.profile.phone.required") Обязательное поле
-            .form-group__feedback(v-if="!$v.profile.phone.numeric") Некорректный номер
 
-          .form-group
-            label.form-group__label.form-group__label--required(for="city-input") Населённый пункт
-            input#city-input.form-group__input.form-control(
-              :class="status('city')",
-              @blur="$v.profile.city.$touch()",
-              v-model.trim="profile.city",
-              type="text"
-            )
-            .form-group__feedback(v-if="!$v.profile.city.required") Используйте только символы алфавита
+            .form-group
+              label.form-group__label.form-group__label--required(
+                for="phone-input"
+              ) Телефон
+              .form-group__input-group.input-group
+                .input-group__prepend +7
+                input#phone-input.input-group__input.form-control(
+                  :class="status('phone')",
+                  @blur="$v.profile.phone.$touch()",
+                  v-model.trim="profile.phone",
+                  type="tel"
+                )
+              .form-group__feedback(v-if="!$v.profile.phone.required") Обязательное поле
+              .form-group__feedback(v-if="!$v.profile.phone.numeric") Некорректный номер
 
-          .form-group
-            label.form-group__label.form-group__label--required(
-              for="birthday-input"
-            ) Дата рождения
-            input#birthday-input.form-group__input.form-control(
-              :class="status('birthday')",
-              @blur="$v.profile.birthday.$touch()",
-              v-model="profile.birthday",
-              type="date"
-            )
+            .form-group
+              label.form-group__label.form-group__label--required(
+                for="city-input"
+              ) Населённый пункт
+              input#city-input.form-group__input.form-control(
+                :class="status('city')",
+                @blur="$v.profile.city.$touch()",
+                v-model.trim="profile.city",
+                type="text"
+              )
+              .form-group__feedback(v-if="!$v.profile.city.required") Используйте только символы алфавита
+
+            .form-group
+              label.form-group__label.form-group__label--required(
+                for="birthday-input"
+              ) Дата рождения
+              input#birthday-input.form-group__input.form-control(
+                :class="status('birthday')",
+                @blur="$v.profile.birthday.$touch()",
+                v-model="profile.birthday",
+                type="date"
+              )
 
           .form-group
             label.form-group__label(for="type-input") Тип задания
@@ -93,7 +95,7 @@
           .form-group
             label.form-group__label(for="about-input") О себе
             textarea#about-input.form-group__input.form-control(
-              v-model="profile.about",
+              v-model="profile.about"
             )
 
           button.btn.btn-success.mr-2(type="submit") Сохранить
@@ -102,19 +104,19 @@
 
 
 <script>
-import Spinner from '../components/Spinner';
+import Spinner from "../components/Spinner";
 import { required, helpers, numeric } from "vuelidate/lib/validators";
 const alpha = helpers.regex("alpha", /^[a-zA-Zа-яА-Я]*$/);
 
 export default {
   components: {
-    Spinner
+    Spinner,
   },
   props: {
     service: Object,
     logOff: Function,
     displayPopup: Function,
-    onLogin: Function
+    onLogin: Function,
   },
   data() {
     return {
@@ -129,7 +131,7 @@ export default {
         github: "",
         telegram: "",
         about: "",
-        is_finished: false
+        is_finished: false,
       },
     };
   },
@@ -147,13 +149,13 @@ export default {
       }
     },
     setProfileData: async function () {
-     await this.service.setProfileData(this.profile);
-     this.displayPopup('Данные успешно сохранены');
+      await this.service.setProfileData(this.profile);
+      this.displayPopup("Данные успешно сохранены");
     },
     leaveProfile() {
       this.logOff();
-      this.displayPopup('Вы вышли из аккаунта');
-    }
+      this.displayPopup("Вы вышли из аккаунта");
+    },
   },
   validations: {
     profile: {
@@ -189,6 +191,11 @@ h2 {
   font-weight: bold;
 }
 
+.form-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: 3vw;
+}
 .profile-enter-active {
   transition: opacity 1s;
 }
@@ -197,4 +204,10 @@ h2 {
   opacity: 0;
 }
 
+@media screen and (max-width: 1100px) {
+  .form-container {
+    grid-template-columns: auto;
+    grid-column-gap: 0px;
+  }
+}
 </style>
