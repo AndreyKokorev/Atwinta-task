@@ -12,6 +12,7 @@ export default class atwintaService {
 			},
 			body
 		};
+
 		const response = await fetch(
 			`${this.base_url}${url}`,
 			req_param);

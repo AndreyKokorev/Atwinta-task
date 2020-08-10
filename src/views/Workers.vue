@@ -1,8 +1,12 @@
 <template lang="pug">
-Spinner(v-if="isLoading")
+Spinner(v-if="LOADING_INDICATOR")
 .workers(v-else)
   .container
-    .wrapper(:key="worker.id", v-for="worker in workersData")
+    .wrapper(
+      @click.capture="$router.push(`/workers/${worker.id}`)",
+      :key="worker.id",
+      v-for="worker in workersData"
+    )
       WorkerCard(:id="worker.id", :name="worker.name", :image="worker.image")
   .pagination
     button(
@@ -12,8 +16,8 @@ Spinner(v-if="isLoading")
     )
     ul.pages-list(@click.capture="switchPage($event.target.textContent)")
       li.pages-list__item(:key="page", v-for="page in totalPages")
-        div(:class="[currentPage == page ? 'active-page' : null]")
-          | {{ page }}{{current_page}}
+        div(:class="{ 'active-page': currentPage == page }")
+          | {{ page }}
     button(
       :class="[!nextPage ? 'disabled' : null, 'next-page-btn']",
       @click="switchPage(nextPage), scrollPage()",
@@ -24,6 +28,7 @@ Spinner(v-if="isLoading")
 <script>
 import WorkerCard from "../components/WorkerCard";
 import Spinner from "../components/Spinner";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   components: {
@@ -39,20 +44,25 @@ export default {
       totalPages: "",
       nextPage: null,
       prevPage: null,
-			current_page: null,
-			isLoading: true
+      current_page: null,
     };
   },
   created() {
     this.switchPage(1);
   },
+  computed: {
+    ...mapGetters(["LOADING_INDICATOR"]),
+  },
   methods: {
+    ...mapActions([
+			"SWITCH_LOADING_INDICATOR"
+			]),
     switchPage: async function (page) {
-			this.isLoading = true;
+      this.SWITCH_LOADING_INDICATOR(true);
       const res = await this.service.getWorkers(page);
       this.workersData = res.data;
-			this.totalPages = res.last_page;
-			this.currentPage = res.current_page;
+      this.totalPages = res.last_page;
+      this.currentPage = res.current_page;
 
       if (res.next_page_url) {
         this.nextPage = res.next_page_url[res.next_page_url.length - 1];
@@ -64,13 +74,13 @@ export default {
         this.prevPage = res.prev_page_url[res.prev_page_url.length - 1];
       } else {
         this.prevPage = false;
-			}
-			this.isLoading = false;
-		},
+      }
+      this.SWITCH_LOADING_INDICATOR(false);
+    },
 
-		scrollPage(){
-			window.scrollTo(0,0);
-		}
+    scrollPage() {
+      window.scrollTo(0, 0);
+    },
   },
 };
 </script>
@@ -125,6 +135,10 @@ img {
   &__item {
     width: 11%;
     transition: 150ms;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 
   &__item:hover {
@@ -135,12 +149,12 @@ img {
 button {
   position: absolute;
   width: 15px;
-  height: 15px;
+  height: 16px;
   border-width: 0px;
   border-left: 2px solid black;
   border-top: 2px solid black;
   background: transparent;
-	outline: none;
+  outline: none;
   transition: 200ms;
 }
 
@@ -180,14 +194,13 @@ button:hover:not(:disabled) {
 
 @media screen and(max-width: 1200px) {
   .container {
-  //grid-template-columns: repeat(auto-fit, minmax(200px, 400px));
+    //grid-template-columns: repeat(auto-fit, minmax(200px, 400px));
+  }
 
-}
-
-.wrapper {
-  width: 100%;
-  padding: 20px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-}
+  .wrapper {
+    width: 100%;
+    padding: 20px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  }
 }
 </style>

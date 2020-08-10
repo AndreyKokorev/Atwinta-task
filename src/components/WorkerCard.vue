@@ -2,7 +2,7 @@
 .card
   img.card__image(:src="image")
   .card__name {{ name }}
-  .card__action( @click="$router.push(`/workers/${id}`)" ) Открыть профиль
+  .card__action Открыть профиль
 </template>
 
 
