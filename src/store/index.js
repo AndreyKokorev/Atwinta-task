@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import workers from './modules/workers'
-import profile from './modules/profile'
-import auth from './modules/auth'
+import workers from './modules/workers/workers'
+import profile from './modules/profile/profile'
+import auth from './modules/auth/auth'
 
 
 Vue.use(Vuex);
@@ -14,9 +14,28 @@ export default new Vuex.Store({
     auth
   },
   state: {
+    isLoading: true,
     isLoggedIn: false,
     message: '',
     isVisible: false,
     profileName: ''
   },
+
+  mutations: {
+    SET_LOADING_INDICATOR: (state, indicator) => {
+      state.isLoading = indicator;
+    },
+  },
+
+  actions: {
+    SWITCH_LOADING_INDICATOR({commit}, indicator) {
+      commit('SET_LOADING_INDICATOR', indicator)
+    },
+  },
+
+  getters: {
+    LOADING_INDICATOR(state) {
+      return state.isLoading;
+    }
+  }
 });

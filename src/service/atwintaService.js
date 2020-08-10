@@ -52,10 +52,6 @@ export default class atwintaService {
 		return await this.getResource('GET', `/workers/${id}`);
 	}
 
-	getWorkers = async (page) => {
-		return await this.getResource('GET', `/workers?page=${page}`);
-	}
-
 	getProfileData = async () => {
 		return await this.getResource('GET', '/user');
 	}

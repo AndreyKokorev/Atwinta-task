@@ -1,31 +1,32 @@
 <template lang="pug">
 Spinner(v-if="isLoading")
 .container(v-else)
-  h2.title {{ profileData.name }}
+  h2.title {{ WORKER_PROFILE_DATA.name }}
   .inner-container
-    img(:src="profileData.image")
+    img(:src="WORKER_PROFILE_DATA.image")
     .info
       .info__item.item
         .item__title Логин:
-        .item__text {{ profileData.login }}
+        .item__text {{ WORKER_PROFILE_DATA.login }}
       .info__item.item
         .item__title Email:
-        .item__text {{ profileData.email }}
+        .item__text {{ WORKER_PROFILE_DATA.email }}
       .info__item.item 
         .item__title Должность:
-        .item__text {{ profileData.worker.position }}
+        .item__text {{ WORKER_PROFILE_DATA.worker.position }}
       .info__item.item
         .item__title Отдел:
-        .item__text {{ profileData.worker.department }}
+        .item__text {{ WORKER_PROFILE_DATA.worker.department }}
       .info__item.item
         .item__title Зачислен:
-        .item__text {{ profileData.worker.adopted_at.split(' ')[0] }}
+        .item__text {{ WORKER_PROFILE_DATA.worker.adopted_at.split(' ')[0] }}
       .info__item.item
         .item__title О себе:
-        .item__text {{ profileData.about }}
+        .item__text {{ WORKER_PROFILE_DATA.about }}
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex';
 import Spinner from "../components/Spinner";
 
 export default {
@@ -50,12 +51,20 @@ export default {
       },
     };
   },
+
   created: async function () {
     const id = this.$route.params.id;
-    const res = await this.service.getWorkerProfile(id);
-    this.profileData = { ...res };
+    await this.GET_WORKER_PROFILE_DATA_FROM_API(id)
     this.isLoading = false;
   },
+
+  computed: {
+    ...mapGetters(['WORKER_PROFILE_DATA'])
+  },
+
+  methods: {
+    ...mapActions(['GET_WORKER_PROFILE_DATA_FROM_API'])
+  }
 };
 </script>
 

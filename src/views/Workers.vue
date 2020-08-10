@@ -5,23 +5,23 @@ Spinner(v-if="LOADING_INDICATOR")
     .wrapper(
       @click.capture="$router.push(`/workers/${worker.id}`)",
       :key="worker.id",
-      v-for="worker in workersData"
+      v-for="worker in WORKERS_DATA"
     )
       WorkerCard(:id="worker.id", :name="worker.name", :image="worker.image")
   .pagination
     button(
-      :class="[!prevPage ? 'disabled' : null, 'prev-page-btn']",
-      @click="switchPage(prevPage)",
-      :disabled="!prevPage"
+      :class="[!PAGE_DATA.prevPage ? 'disabled' : null, 'prev-page-btn']",
+      @click="switchPage(PAGE_DATA.prevPage)",
+      :disabled="!PAGE_DATA.prevPage"
     )
     ul.pages-list(@click.capture="switchPage($event.target.textContent)")
-      li.pages-list__item(:key="page", v-for="page in totalPages")
-        div(:class="{ 'active-page': currentPage == page }")
+      li.pages-list__item(:key="page", v-for="page in PAGE_DATA.totalPages")
+        div(:class="{ 'active-page': PAGE_DATA.currentPage == page }")
           | {{ page }}
     button(
-      :class="[!nextPage ? 'disabled' : null, 'next-page-btn']",
-      @click="switchPage(nextPage), scrollPage()",
-      :disabled="!nextPage"
+      :class="[!PAGE_DATA.nextPage ? 'disabled' : null, 'next-page-btn']",
+      @click="switchPage(PAGE_DATA.nextPage), scrollPage()",
+      :disabled="!PAGE_DATA.nextPage"
     )
 </template>
 
@@ -35,46 +35,21 @@ export default {
     WorkerCard,
     Spinner,
   },
-  props: {
-    service: Object,
-  },
-  data() {
-    return {
-      workersData: [],
-      totalPages: "",
-      nextPage: null,
-      prevPage: null,
-      current_page: null,
-    };
-  },
   created() {
-    this.switchPage(1);
+    this.switchPage();
   },
   computed: {
-    ...mapGetters(["LOADING_INDICATOR"]),
+    ...mapGetters(['LOADING_INDICATOR', 'WORKERS_DATA','PAGE_DATA']),
   },
   methods: {
     ...mapActions([
-			"SWITCH_LOADING_INDICATOR"
+			'SWITCH_LOADING_INDICATOR',
+			'GET_WORKERS_PAGE_DATA_FROM_API'
 			]),
+
     switchPage: async function (page) {
       this.SWITCH_LOADING_INDICATOR(true);
-      const res = await this.service.getWorkers(page);
-      this.workersData = res.data;
-      this.totalPages = res.last_page;
-      this.currentPage = res.current_page;
-
-      if (res.next_page_url) {
-        this.nextPage = res.next_page_url[res.next_page_url.length - 1];
-      } else {
-        this.nextPage = false;
-      }
-
-      if (res.prev_page_url) {
-        this.prevPage = res.prev_page_url[res.prev_page_url.length - 1];
-      } else {
-        this.prevPage = false;
-      }
+			await this.GET_WORKERS_PAGE_DATA_FROM_API(page);  
       this.SWITCH_LOADING_INDICATOR(false);
     },
 
