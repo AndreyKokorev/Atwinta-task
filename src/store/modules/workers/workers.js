@@ -5,8 +5,9 @@ export default {
     workersData: [],
     pageData: {},
     workerProfile: {},
-    
+
   },
+  
   mutations: {
     SET_WORKERS_DATA_TO_STATE: (state, workers) => {
       state.workersData = workers;
@@ -27,42 +28,34 @@ export default {
         state.pageData.prevPage = false;
       }
     },
-   
+
     SET_WORKER_PROFILE_DATA_TO_STATE: (state, data) => {
-      state.workerProfile = {...data};
+      state.workerProfile = {
+        ...data
+      };
     }
   },
+
   actions: {
-    GET_WORKERS_PAGE_DATA_FROM_API({commit}, page = 1) {
-      getResource(`/workers?page=${page}`)
-        .then((workersPage)=> {
-          commit('SET_WORKERS_DATA_TO_STATE', workersPage.data.data);
-          commit('SET_PAGE_DATA_TO_STATE', workersPage.data);
-          return true;
-        })
-    }, 
-
-    GET_WORKER_PROFILE_DATA_FROM_API({commit}, id) {
-      getResource(`/workers/${id}`)
-        .then((profileData)=> {
-          commit('SET_WORKER_PROFILE_DATA_TO_STATE', profileData.data);
-          return true;
+    async GET_WORKERS_PAGE_DATA_FROM_API({ commit }, page = 1) {
+      await getResource(`/workers?page=${page}`)
+        .then((response) => {
+          commit('SET_WORKERS_DATA_TO_STATE', response.data.data);
+          commit('SET_PAGE_DATA_TO_STATE', response.data);
         })
     },
 
-    
-
+    async GET_WORKER_PROFILE_DATA_FROM_API({ commit }, id) {
+      await getResource(`/workers/${id}`)
+        .then((response) => {
+          commit('SET_WORKER_PROFILE_DATA_TO_STATE', response.data);
+        })
+    },
   },
+
   getters: {
-    WORKERS_DATA(state) {
-      return state.workersData;
-    },
-    PAGE_DATA(state) {
-      return state.pageData;
-    },
-    WORKER_PROFILE_DATA(state) {
-      return state.workerProfile
-    },
+    WORKERS_DATA: state => state.workersData,
+    PAGE_DATA: state => state.pageData,
+    WORKER_PROFILE_DATA: state => state.workerProfile
   }
 }
-

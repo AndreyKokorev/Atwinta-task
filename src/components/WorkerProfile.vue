@@ -1,5 +1,5 @@
 <template lang="pug">
-Spinner(v-if="isLoading")
+Spinner(v-if="LOADING_INDICATOR")
 .container(v-else)
   h2.title {{ WORKER_PROFILE_DATA.name }}
   .inner-container
@@ -33,37 +33,19 @@ export default {
   components: {
     Spinner,
   },
-  props: {
-    service: Object,
-  },
-  data() {
-    return {
-      isLoading: true,
-      profileData: {
-        login: "",
-        email: "",
-        worker: {
-          position: "",
-          department: "",
-          adopted_at: "",
-        },
-        about: "",
-      },
-    };
-  },
-
   created: async function () {
+    this.SWITCH_LOADING_INDICATOR(true);
     const id = this.$route.params.id;
-    await this.GET_WORKER_PROFILE_DATA_FROM_API(id)
-    this.isLoading = false;
+    await this.GET_WORKER_PROFILE_DATA_FROM_API(id);
+    this.SWITCH_LOADING_INDICATOR(false);
   },
 
   computed: {
-    ...mapGetters(['WORKER_PROFILE_DATA'])
+    ...mapGetters(['WORKER_PROFILE_DATA', 'LOADING_INDICATOR'])
   },
 
   methods: {
-    ...mapActions(['GET_WORKER_PROFILE_DATA_FROM_API'])
+    ...mapActions(['GET_WORKER_PROFILE_DATA_FROM_API', 'SWITCH_LOADING_INDICATOR'])
   }
 };
 </script>

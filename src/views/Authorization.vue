@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import { required, email, minLength } from "vuelidate/lib/validators";
 
 export default {
@@ -55,24 +56,23 @@ export default {
 		displayPopup: Function,
 		isLoggedIn: Boolean
 	},
+
 	data() {
 		return {
 			restore: false,
 			formLog: {
-				email: '',
-				password: '',
+				email: 'andrey.kokorev.w.dev@gmail.com',
+				password: 'I7ExBEs4YZ',
 			},
 		};
 	},
-	methods: {
-		authUser: async function () {
-			const { token, user: { name } } = await this.service.authorization(this.formLog);
 
-			localStorage.setItem("accessToken", token);
-			
-			this.onLogin(name);
-			this.displayPopup('вы успешно авторизировались')
-			this.$router.push("workers");
+	methods: {
+		...mapActions(['AUTHORIZATION', 'DISPLAY_POPUP']),
+
+		authUser: async function() {
+			await this.AUTHORIZATION(this.formLog);
+			this.DISPLAY_POPUP('Вы авторизировались');
 		},
 		status(type) {
 			if (this.$v.formLog[type].$error && this.$v.formLog[type].$dirty) {

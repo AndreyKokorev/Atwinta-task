@@ -14,28 +14,41 @@ export default new Vuex.Store({
     auth
   },
   state: {
-    isLoading: true,
-    isLoggedIn: false,
-    message: '',
+    isLoading: true,    
+    popupMessage: null,
     isVisible: false,
-    profileName: ''
   },
 
   mutations: {
     SET_LOADING_INDICATOR: (state, indicator) => {
       state.isLoading = indicator;
     },
+    SET_POPUP_VISIBILITY_INDICATOR: (state, indicator) => {
+      state.isVisible = indicator;
+    },
+    SET_POPUP_MESSAGE: (state, message) => {
+      state.popupMessage = message;
+    }   
   },
 
   actions: {
-    SWITCH_LOADING_INDICATOR({commit}, indicator) {
+    SWITCH_LOADING_INDICATOR({ commit }, indicator) {
       commit('SET_LOADING_INDICATOR', indicator)
     },
+   
+    DISPLAY_POPUP({ commit }, message) {         
+      commit('SET_POPUP_VISIBILITY_INDICATOR', true);
+      commit('SET_POPUP_MESSAGE', message);
+      
+      setTimeout(() => {
+        commit('SET_POPUP_VISIBILITY_INDICATOR', false);
+      }, 2000);
+    }
   },
 
   getters: {
-    LOADING_INDICATOR(state) {
-      return state.isLoading;
-    }
+    LOADING_INDICATOR: state => state.isLoading,
+    POPUP_VISIBILITY_INDICATOR: state => state.isVisible,
+    POPUP_MESSAGE: state => state.popupMessage
   }
 });

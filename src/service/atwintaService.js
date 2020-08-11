@@ -25,14 +25,7 @@ export default class atwintaService {
 		return await response.json();
 	}
 
-	authorization = async (parameters) => {
-		const url = this.formParameters(parameters);
-		return await this.getResource('POST', `/auth/login?${url}`);
-	}
 
-	autoAuthorization = async () => {
-		return await this.getResource('POST', `/user`);
-	}
 
 	restorePassword = async (parameters) => {
 		const url = this.formParameters(parameters);
@@ -46,19 +39,6 @@ export default class atwintaService {
 		console.log('json: ', json);
 		console.log('parsed: ', obj);
 		return await this.getResource('POST', `/auth/restore`, json);
-	}
-
-	getWorkerProfile = async (id) => {
-		return await this.getResource('GET', `/workers/${id}`);
-	}
-
-	getProfileData = async () => {
-		return await this.getResource('GET', '/user');
-	}
-
-	setProfileData = async (parameters) => {
-		const json = JSON.stringify(parameters)
-		return await this.getResource('POST', `/user`, json);
 	}
 
 	formParameters = (parameters) => {

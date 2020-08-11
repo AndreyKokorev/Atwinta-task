@@ -1,21 +1,23 @@
 <template lang="pug">
   transition(name="popup")
-    .container(v-if="isVisible")
-      .text {{ message }}
+    .container(v-if="POPUP_VISIBILITY_INDICATOR")
+      .text {{ POPUP_MESSAGE }}
 </template>
 
 <script scope>
+import { mapGetters } from 'vuex';
+
 export default {
-  props: {
-    message: String,
-    isVisible: Boolean,
+  computed: {
+    ...mapGetters([    
+      'POPUP_VISIBILITY_INDICATOR',
+      'POPUP_MESSAGE'])
   }
 };
 </script>
 
 
 <style scoped>
-
 .container {
   position: fixed;
   right: 5px;
@@ -44,5 +46,4 @@ export default {
 .popup-enter, .popup-leave-to {
   opacity: 0;
 }
-
 </style>
