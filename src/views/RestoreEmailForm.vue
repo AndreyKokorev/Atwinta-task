@@ -4,7 +4,7 @@
     .col-sm-6.mx-auto
       form(@submit.prevent="sendEmail(), $router.push('/auth/restore/confirm')", novalidate)
         .form-group
-          label.form-group__label(for="email-input") Пароль
+          label.form-group__label(for="email-input") Введите email для получения токена
           input#email-input.form-group__input.form-control(
             :class="status()",
             @blur="$v.email.$touch()",
