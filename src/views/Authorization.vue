@@ -1,132 +1,131 @@
 <template lang="pug">
 .container.mt-4
-	.row
-		.col-sm-6.mx-auto
-			form(@submit.prevent="authUser", novalidate)
-				.auth
-					.form-group
-						label.form-group__label(for="email-input") Email
-						input.form-group__input.form-control#email-input(
-							:class="status('email')",
-							@blur="$v.formLog.email.$touch()",
-							v-model.trim="formLog.email",
-							type="email",
-							aria-describedby="emailHelp"
-						)
+  .row
+    .col-sm-6.mx-auto
+      form(@submit.prevent="authUser", novalidate)
+        .auth
+          .form-group
+            label.form-group__label(for="email-input") Email
+            input#email-input.form-group__input.form-control(
+              :class="status('email')",
+              @blur="$v.email.$touch()",
+              v-model.trim="email",
+              type="email",
+              aria-describedby="emailHelp"
+            )
 
-						.form-group__feedback(
-							v-if="!$v.formLog.email.required && $v.formLog.email.$dirty"
-							) Обязательное поле
-							
-						.form-group__feedback(
-							v-if="!$v.formLog.email.email && $v.formLog.email.$dirty"
-							) Поле должно быть email адресом
+            .form-group__feedback(v-if="!$v.email.required && $v.email.$dirty") Обязательное поле
 
-					.form-group
-						label.form-group__label(for="password-input") Пароль
-						input.form-group__input.form-control#password-input(
-							:class="status('password')",
-							@blur="$v.formLog.password.$touch()",
-							v-model.trim="formLog.password",
-							type="password",
-							aria-describedby="passwordHelp"
-						)
+            .form-group__feedback(v-if="!$v.email.email && $v.email.$dirty") Поле должно быть email адресом
 
-						.form-group__feedback(
-							v-if="$v.formLog.password.$dirty && !$v.formLog.password.required"
-							) Обязательное поле 
+          .form-group
+            label.form-group__label(for="password-input") Пароль
+            input#password-input.form-group__input.form-control(
+              :class="status('password')",
+              @blur="$v.password.$touch()",
+              v-model.trim="password",
+              type="password",
+              aria-describedby="passwordHelp"
+            )
 
-						.form-group__feedback(
-							v-if="$v.formLog.password.$dirty && !$v.formLog.password.minLength > 0"
-						) Пароль должен быть не меньше {{ $v.formLog.password.$params.minLength.min }} символов
+            .form-group__feedback(
+              v-if="$v.password.$dirty && !$v.password.required"
+            ) Обязательное поле
 
-					.btn-container
-						button.btn.btn-primary(:disabled="$v.$invalid", type="submit") Войти
-						button.btn.btn-secondary(@click="restorePassword", type="button") Забыли пароль?
+            .form-group__feedback(
+              v-if="$v.password.$dirty && !$v.password.minLength > 0"
+            ) Пароль должен быть не меньше {{ $v.password.$params.minLength.min }} символов
+
+          .btn-container
+            button.btn.btn-primary(:disabled="$v.$invalid", type="submit") Войти
+            button.btn.btn-secondary(@click="restorePassword", type="button") Забыли пароль?
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapGetters, mapMutations, mapActions } from "vuex";
 import { required, email, minLength } from "vuelidate/lib/validators";
 
 export default {
-	props: {
-		service: Object,
-		onLogin: Function,
-		displayPopup: Function,
-		isLoggedIn: Boolean
-	},
-
-	data() {
-		return {
-			restore: false,
-			formLog: {
-				email: 'andrey.kokorev.w.dev@gmail.com',
-				password: 'I7ExBEs4YZ',
-			},
-		};
-	},
-
-	methods: {
-		...mapActions(['AUTHORIZATION', 'DISPLAY_POPUP']),
-
-		authUser: async function() {
-			await this.AUTHORIZATION(this.formLog);
-			this.DISPLAY_POPUP('Вы авторизировались');
-		},
-		status(type) {
-			if (this.$v.formLog[type].$error && this.$v.formLog[type].$dirty) {
-				return "is-invalid warning";
-			} else if (
-				this.$v.formLog[type].$dirty &&
-				!this.$v.formLog[type].$error
-			) {
-				return "is-valid";
+  props: {
+    service: Object,
+    onLogin: Function,
+    displayPopup: Function,
+    isLoggedIn: Boolean,
+  },
+  computed: {
+    ...mapGetters(["LOGIN_FORM_DATA"]),
+    email: {
+      get() {
+        return this.LOGIN_FORM_DATA.email;
+      },
+      set(email) {
+        this.SET_LOGIN_EMAIL_TO_STATE(email);
+      },
+    },
+    password: {
+      get() {
+        return this.LOGIN_FORM_DATA.password;
+      },
+      set(password) {
+        this.SET_LOGIN_PASSWORD_TO_STATE(password);
+      },
+    },
+  },
+  methods: {
+    ...mapActions(["AUTHORIZATION", "DISPLAY_POPUP"]),
+    ...mapMutations(["SET_LOGIN_EMAIL_TO_STATE", "SET_LOGIN_PASSWORD_TO_STATE"]),
+    authUser: async function () {
+      await this.AUTHORIZATION(this.formLog);
+      this.DISPLAY_POPUP("Вы авторизировались");
+    },
+    status(type) {
+      if (this.$v[type].$error && this.$v[type].$dirty) {
+        return "is-invalid warning";
+      } else if (this.$v[type].$dirty && !this.$v[type].$error) {
+        return "is-valid";
 			}
-		},
-		restorePassword() {
+    },
+    restorePassword() {
       this.$router.push({
-				name: 'restore'
-			})
-    }
-	},
-	validations: {
-		formLog: {
-			email: {
-				required,
-				email,
-			},
-			password: {
-				required,
-				minLength: minLength(6),
-			},
-		},
-	},
+        name: "restore",
+      });
+    },
+  },
+  validations: {
+      email: {
+        required,
+        email,
+      },
+      password: {
+        required,
+        minLength: minLength(6),
+      },
+  },
 };
 </script>
 
 <style lang="scss" scope>
 .container {
-	justify-self: flex-end;
+  justify-self: flex-end;
 }
 
 .btn-container {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-	grid-gap: 30px 40px;
-	width: 100%;
-	margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-gap: 30px 40px;
+  width: 100%;
+  margin-top: 40px;
 }
 
 .warning {
-	background: rgba(228, 25, 25, 0.11);
+  background: rgba(228, 25, 25, 0.11);
 }
 
 .form-group {
-	position: relative;
+  position: relative;
 
-	&__feedback {
-		position: absolute;
-	}
+  &__feedback {
+    position: absolute;
+  }
 }
 </style>

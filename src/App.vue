@@ -12,9 +12,6 @@
 </template>
 
 <script>
-//ToDo
-//Password recovering
-//Profile, worker, worker profile styling
 import { mapActions, mapGetters } from "vuex";
 import Authorization from "./views/Authorization";
 import Popup from "./components/Popup";
