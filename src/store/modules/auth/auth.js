@@ -4,8 +4,8 @@ import router from '../../../router';
 export default {
 	state:{
 		loginForm: {
-			email: 'andrey.kokorev.w.dev@gmail.com',
-			password: 'I7ExBEs4YZ',
+			email: '',
+			password: '',
 		},
 		restoreForm: {
 			token: '',
